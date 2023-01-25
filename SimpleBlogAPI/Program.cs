@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleBlogAPI.Middleware;
 using Microsoft.OpenApi.Models;
 using SimpleBlogAPI.Filters.ActionFilters;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +43,10 @@ builder.Services.AddScoped<ValidateCategoryExistsAttribute>();
 builder.Services.AddSwaggerGen(s =>
 {
     s.SwaggerDoc("v1", new OpenApiInfo { Title = "Simple Blog API", Version = "v1" });
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    s.IncludeXmlComments(xmlPath);
 });
 
 var app = builder.Build();

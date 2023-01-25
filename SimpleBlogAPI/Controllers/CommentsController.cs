@@ -24,7 +24,16 @@ namespace SimpleBlogAPI.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Get a list of comments from a specific post
+        /// </summary>
+        /// <param name="postId">Post id</param>
+        /// <returns>A list of comments</returns>
+        /// <response code="200">Returns the comments</response>
+        /// <response code="404">The post does not exist</response>
         [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         [ServiceFilter(typeof(ValidatePostExistsAttribute))]
         public async Task<IActionResult> GetCommentsForPost(int postId)
         {
@@ -37,7 +46,17 @@ namespace SimpleBlogAPI.Controllers
             return Ok(commentsDto);
         }
 
+        /// <summary>
+        /// Get a specific comment from a specific post
+        /// </summary>
+        /// <param name="postId">Post id</param>
+        /// <param name="commentId">Comment id</param>
+        /// <returns>Comment with matching id</returns>
+        /// <response code="200">Returns the comment</response>
+        /// <response code="404">The post or comment does not exist</response>
         [HttpGet("{commentId}", Name = "GetCommentForPost")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         [ServiceFilter(typeof(ValidatePostExistsAttribute))]
         public async Task<IActionResult> GetCommentForPost(int postId, int commentId)
         {
@@ -55,7 +74,18 @@ namespace SimpleBlogAPI.Controllers
             return Ok(commentDto);
         }
 
+        /// <summary>
+        /// Get a list of comments by ids
+        /// </summary>
+        /// <param name="ids">Ids of comments</param>
+        /// <returns>A list of comments by ids</returns>
+        /// <response code="200">Returns a list of comments</response>
+        /// <response code="400">Parameter ids is null</response>
+        /// <response code="404">Some ids are not valid in a collection</response>
         [HttpGet("collection/({ids})", Name = "GetCommentCollection")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetCommentCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<int> ids)
         {
             if (ids == null)
@@ -79,7 +109,21 @@ namespace SimpleBlogAPI.Controllers
             return Ok(commentsDto);
         }
 
+        /// <summary>
+        /// Create comment for post
+        /// </summary>
+        /// <param name="postId">Post id</param>
+        /// <param name="input">Comment input object</param>
+        /// <returns>Newly created comment</returns>
+        /// <response code="201">Returns the newly created comment</response>
+        /// <response code="422">Invalid model state for comment input object</response>
+        /// <response code="400">Comment input object is null</response>
+        /// <response code="404">Post does not exist</response>
         [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(422)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [ServiceFilter(typeof(ValidatePostExistsAttribute))]
         public async Task<IActionResult> CreateCommentForPost(int postId, [FromBody] CommentCreationDto input)
@@ -95,7 +139,17 @@ namespace SimpleBlogAPI.Controllers
             return CreatedAtRoute("GetCommentForPost", new { postId = postId, commentId = commentDto.Id }, commentDto);
         }
 
+        /// <summary>
+        /// Delete comment by id
+        /// </summary>
+        /// <param name="postId">post id</param>
+        /// <param name="commentId">comment id</param>
+        /// <returns>204 no content response</returns>
+        /// <response code="204">Returns no content response</response>
+        /// <response code="404">Post or comment does not exist</response>
         [HttpDelete("{commentId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
         [ServiceFilter(typeof(ValidateCommentForPostExistsAttribute))]
         public async Task<IActionResult> DeleteCommentForPost(int postId, int commentId)
         {
@@ -107,7 +161,22 @@ namespace SimpleBlogAPI.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Update comment for post by id
+        /// </summary>
+        /// <param name="postId">Post id</param>
+        /// <param name="commentId">Comment id</param>
+        /// <param name="input">Comment input object</param>
+        /// <returns>204 no content response</returns>
+        /// <response code="204">Returns no content response</response>
+        /// <response code="422">Invalid model state for comment input object</response>
+        /// <response code="400">Comment input object is null</response>
+        /// <response code="404">Post or comment does not exist</response>
         [HttpPut("{commentId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(422)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [ServiceFilter(typeof(ValidateCommentForPostExistsAttribute))]
         public async Task<IActionResult> UpdateCommentForPost(int postId, int commentId, [FromBody] CommentUpdateDto input)
@@ -120,7 +189,22 @@ namespace SimpleBlogAPI.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Partially update comment for post by id
+        /// </summary>
+        /// <param name="postId">Post id</param>
+        /// <param name="commentId">Comment id</param>
+        /// <param name="patchInput">Comment input object</param>
+        /// <returns>204 no content response</returns>
+        /// <response code="204">Returns no content response</response>
+        /// <response code="404">Post or comment does not exist</response>
+        /// <response code="400">Comment input object sent from client is null</response>
+        /// <response code="422">Invalid model state for the comment input object</response>
         [HttpPatch("{commentId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(422)]
         [ServiceFilter(typeof(ValidateCommentForPostExistsAttribute))]
         public async Task<IActionResult> PartiallyUpdateCommentForPost(int postId, int commentId, 
             [FromBody] JsonPatchDocument<CommentUpdateDto> patchInput)

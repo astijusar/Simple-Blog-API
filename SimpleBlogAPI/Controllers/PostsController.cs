@@ -26,7 +26,16 @@ namespace SimpleBlogAPI.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Get a list of posts for category
+        /// </summary>
+        /// <param name="categoryId">Category id</param>
+        /// <returns>A list of posts</returns>
+        /// <response code="200">Returns a list of posts</response>
+        /// <response code="404">Category does not exist</response>
         [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         [Route("~/api/categories/{categoryId}/[controller]")]
         public async Task<IActionResult> GetPostsForCategory(int categoryId) 
         {
@@ -48,7 +57,13 @@ namespace SimpleBlogAPI.Controllers
             return Ok(postsDto);
         }
 
+        /// <summary>
+        /// Get a list of all posts regardless of category
+        /// </summary>
+        /// <returns>A list of all posts</returns>
+        /// <response code="200">Returns a list of posts</response>
         [HttpGet]
+        [ProducesResponseType(200)]
         public async Task<IActionResult> GetPosts()
         {
             var allPosts = await _blogContext.Posts.AsNoTracking()
@@ -60,7 +75,16 @@ namespace SimpleBlogAPI.Controllers
             return Ok(allPostsDto);
         }
 
+        /// <summary>
+        /// Get a post by id
+        /// </summary>
+        /// <param name="postId">post id</param>
+        /// <returns>A post</returns>
+        /// <response code="200">Returns a posts</response>
+        /// <response code="404">Post does not exist</response>
         [HttpGet("{postId}", Name = "GetPostById")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetPost(int postId)
         {
             var post = await _blogContext.Posts.AsNoTracking()
@@ -77,7 +101,18 @@ namespace SimpleBlogAPI.Controllers
             return Ok(postDto);
         }
 
+        /// <summary>
+        /// Get a list of posts by ids
+        /// </summary>
+        /// <param name="ids">Ids of posts</param>
+        /// <returns>A list of posts</returns>
+        /// <response code="200">Returns a list of posts</response>
+        /// <response code="404">Some ids are not valid in a collection</response>
+        /// <response code="400">Parameter ids is null</response>
         [HttpGet("collection/({ids})", Name = "GetPostCollection")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> GetPostCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<int> ids)
         {
             if (ids == null)
@@ -102,7 +137,21 @@ namespace SimpleBlogAPI.Controllers
             return Ok(postsDto);
         }
 
+        /// <summary>
+        /// Create a post for category
+        /// </summary>
+        /// <param name="categoryId">Category id</param>
+        /// <param name="input">Post input object</param>
+        /// <returns>The newly created post</returns>
+        /// <response code="201">Returns the newly created post</response>
+        /// <response code="422">Invalid model state for post input object</response>
+        /// <response code="400">Post input object is null</response>
+        /// <response code="404">Category does not exist</response>
         [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(422)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         [Route("~/api/categories/{categoryId}/[controller]")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreatePost(int categoryId, [FromBody] PostCreationDto input)
@@ -130,7 +179,21 @@ namespace SimpleBlogAPI.Controllers
             return CreatedAtRoute("GetPostById", new { postId = postToReturn.Id }, postToReturn);
         }
 
+        /// <summary>
+        /// Create multiple posts for category
+        /// </summary>
+        /// <param name="categoryId">Category id</param>
+        /// <param name="input">Post input object</param>
+        /// <returns>The newly created posts</returns>
+        /// <response code="201">Returns the newly created posts</response>
+        /// <response code="422">Invalid model state for post input object(s)</response>
+        /// <response code="400">Post input objects are null</response>
+        /// <response code="404">Category does not exist</response>
         [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(422)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         [Route("~/api/categories/{categoryId}/[controller]/collection")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreatePostCollection(int categoryId, [FromBody] IEnumerable<PostCreationDto> input)
@@ -166,7 +229,16 @@ namespace SimpleBlogAPI.Controllers
             return CreatedAtRoute("GetPostCollection", new { ids }, postsDto);
         }
 
+        /// <summary>
+        /// Delete a post by id
+        /// </summary>
+        /// <param name="postId">Post id</param>
+        /// <returns>204 no content response</returns>
+        /// <response code="204">Returns no content response</response>
+        /// <response code="404">Post does not exist</response>
         [HttpDelete("{postId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
         [ServiceFilter(typeof(ValidatePostExistsAttribute))]
         public async Task<IActionResult> DeletePost(int postId)
         {
@@ -178,7 +250,21 @@ namespace SimpleBlogAPI.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Update a post by id
+        /// </summary>
+        /// <param name="postId">Post id</param>
+        /// <param name="input">Post input object</param>
+        /// <returns>204 no content response</returns>
+        /// <response code="204">Returns no content response</response>
+        /// <response code="404">Post does not exist</response>
+        /// <response code="422">Invalid model state for post input object</response>
+        /// <response code="400">Post input object is null</response>
         [HttpPut("{postId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(422)]
+        [ProducesResponseType(400)]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [ServiceFilter(typeof(ValidatePostExistsAttribute))]
         public async Task<IActionResult> UpdatePost(int postId, [FromBody] PostUpdateDto input)
@@ -191,7 +277,21 @@ namespace SimpleBlogAPI.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Partially update post by id
+        /// </summary>
+        /// <param name="postId">Post id</param>
+        /// <param name="patchInput">Post input object</param>
+        /// <returns>204 no content response</returns>
+        /// <response code="204">Returns no content response</response>
+        /// <response code="404">Post does not exist</response>
+        /// <response code="400">Post input object sent from client is null</response>
+        /// <response code="422">Invalid model state for the post input object</response>
         [HttpPatch("{postId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(422)]
         [ServiceFilter(typeof(ValidatePostExistsAttribute))]
         public async Task<IActionResult> PartiallyUpdatePost(int postId, [FromBody] JsonPatchDocument<PostUpdateDto> patchInput)
         {
