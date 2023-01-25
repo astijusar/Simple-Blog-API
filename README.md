@@ -7,8 +7,9 @@ Features:
 - Validation
 - Asynchronus Code
 - Action Filters
-- Swagger documentation
-- Dto use
+- Model Binding
+- Swagger Documentation
+- DTOs
 
 The API has 3 controllers:
 - Categories
@@ -177,7 +178,7 @@ Get a list of categories by ids
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| ids | query | Ids of categories | Yes | [ integer ] |
+| ids | query | A comma-separated string of integers  | Yes | [ integer ] |
 
 ##### Responses
 
@@ -339,7 +340,7 @@ Get a list of comments by ids
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| ids | query | Ids of comments | Yes | [ integer ] |
+| ids | query | A comma-separated string of integers | Yes | [ integer ] |
 | postId | path |  | Yes | string |
 
 #### Responses
@@ -496,7 +497,7 @@ Get a list of posts by ids
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| ids | query | Ids of posts | Yes | [ integer ] |
+| ids | query | A comma-separated string of integers | Yes | [ integer ] |
 
 #### Responses
 
